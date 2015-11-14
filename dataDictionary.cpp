@@ -5,8 +5,19 @@
 //  Created by IreneWu on 15/11/11.
 //  Copyright (c) 2015年 IreneWu. All rights reserved.
 //
+
+// 1. change into the C++
+// 2. add the functions that can find one attribute
+    // just return the attribute struct, 
+    // find the attribute type and offset according to attribute name
+// 3. change the length of attribute into then number of byte
+
+extern "C" {
+    #include <string.h>
+};
 #include <string>
 #include <cstdio>
+
 #include "dataDictionary.h"
 int initTable(struct dbSysHead *head, long fid)
 {
@@ -112,6 +123,7 @@ int changeRecordNum(struct dbSysHead *head, long fid, int num)
  * @author mengxi
  * @date 2015/11/4
  **/
+ // change the diao yong de length
 int initAttribute(struct dbSysHead *head, long fid, char *name, int type, int length)
 {
     
@@ -131,10 +143,11 @@ int initAttribute(struct dbSysHead *head, long fid, char *name, int type, int le
     pos = head->redef[n].attributeNum;
     strcpy(head->redef[n].attribute[pos].attributeName, name);
     head->redef[n].attribute[pos].type = type;
-    head->redef[n].attribute[pos].length = length;
+    head->redef[n].attribute[pos].length = length;  // the length should be the number of byte
     if (pos == 0)
     {
         head->redef[n].attribute[pos].recordDeviation = 0;
+        // can simplify
         switch (head->redef[n].attribute[pos].type)
         {
             case 1:head->redef[n].recordLength += sizeof(int);  break;

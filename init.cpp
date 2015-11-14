@@ -1,7 +1,8 @@
-
+extern "C" {
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+};
 #include"dbHead.h"
 
 /**
@@ -16,7 +17,7 @@
 int initSys(struct dbSysHead *head)
 {
 	FILE *fp;
-	int i;
+	int i, k;
 
 	fp = fopen(DBMS_DAT, "rb");
 	if (NULL == fp) {
@@ -33,12 +34,14 @@ int initSys(struct dbSysHead *head)
 	fseek(fp, head->desc.bitMapAddr, SEEK_SET);
 	fread(head->bitMap, 1, head->desc.sizeBitMap, fp);
 
-	for (i = 0; i<SIZE_BUFF; i++) {
-		head->buff.map[i].pageNo = -1;
-		head->buff.map[i].vstTime = 0;
-		head->buff.map[i].edit = P_UNEDIT;
+	for (k=0; k<3; k++) {
+		for (i = 0; i<SIZE_BUFF; i++) {
+			head->buff[k].map[i].pageNo = -1;
+			head->buff[k].map[i].vstTime = 0;
+			head->buff[k].map[i].edit = P_UNEDIT;
+		}
+		head->buff[k].curTimeStamp = 0;
 	}
-	head->buff.curTimeStamp = 0;
     
 	fclose(fp);
 	return 0;

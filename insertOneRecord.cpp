@@ -17,7 +17,7 @@ long insertOneRecord(struct dbSysHead *head , int fileID, char * oneRow){
     int fPhysicalID = queryFileID(head , fileID);
     relationDefine dic = head->redef[fPhysicalID];
     long pos = (head->desc.fileDesc[fPhysicalID].filePageNum - 1) * SIZE_PER_PAGE + head->desc.fileDesc[fPhysicalID].filePageEndPos;
-    wtFile(head, 1, pos, dic.recordLength, oneRow);
+    wtFile(head, 0, 1, pos, dic.recordLength, oneRow);
     head->desc.fileDesc[fPhysicalID].filePageEndPos += dic.recordLength;
     dic.recordNum ++;
 	

@@ -78,7 +78,7 @@ int main()
     int scanPointer = 0;
     int rec_length = head.redef[dictID].recordLength;
 	printf("attributeName::%s", head.redef[dictID].attribute[0].attributeName);
-    RecordCursor scanTable(&head, 1, rec_length);
+    RecordCursor scanTable(&head, 0, 1, rec_length);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
         scanPointer ++;
@@ -122,7 +122,7 @@ int main()
 	
 	
 	one_Row_ = (char *)malloc(sizeof(char)*rec_length);
-	rdFile( &head, 1, pos, rec_length,one_Row_);
+	rdFile( &head, 0, 1, pos, rec_length,one_Row_);
 	printf("reading from index:\n");
 	getOneRecord(one_Row_, dic);
     

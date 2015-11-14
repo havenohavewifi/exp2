@@ -81,7 +81,8 @@ bool createIndexOn(struct dbSysHead *head, long fid, char* column){
     int scanPointer = 0;
 	int offset;
     long rec_length = (long)(head->redef[idx].recordLength);
-    RecordCursor scanTable(head, fid, rec_length);		
+    // default use the first buffer block
+    RecordCursor scanTable(head, 0, fid, rec_length);		
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
 		offset = head->redef[idx].attribute[i].recordDeviation;
@@ -183,7 +184,7 @@ bool insertInIndex(struct dbSysHead *head, long fid, int position){
 	int key;
 	long rec_length = (long)(head->redef[idx].recordLength);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
-	rdFile( head, fid, position, rec_length,one_Row_);
+	rdFile( head, 0, fid, position, rec_length,one_Row_);
     
 	for( i = 0; i <= head->redef[idx].attributeNum; i++) {
 		index_filename = (char *)malloc( 3*NAMELENGTH );
@@ -247,7 +248,7 @@ bool deleteInIndex(struct dbSysHead *head, long fid, int position){
 	int key;
 	long rec_length = (long)(head->redef[idx].recordLength);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
-	rdFile( head, fid, position, rec_length,one_Row_);
+	rdFile( head, 0, fid, position, rec_length,one_Row_);
     
 	for( i = 0; i <= head->redef[idx].attributeNum; i++) {
 		index_filename = (char *)malloc( 3*NAMELENGTH );

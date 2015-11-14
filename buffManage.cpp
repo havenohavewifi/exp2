@@ -19,12 +19,12 @@ extern "C" {
  * @author cshizhe
  * @date 2015/10/20 
  **/
-int queryPage( struct dbSysHead *head, long query )
+int queryPage( struct dbSysHead *head, int bufferID, long query )
 {
 	int i;
 
 	for( i=0; i<SIZE_BUFF; i++ ) {
-		if( (head->buff).map[i].pageNo == query ) {
+		if( (head->buff[bufferID]).map[i].pageNo == query ) {
 			return i;
 		}
 	}
@@ -43,20 +43,20 @@ int queryPage( struct dbSysHead *head, long query )
  * @author cshizhe
  * @date 2015/10/20 
  **/
-int replacePage( struct dbSysHead *head, int mapNo, long pageNo )
+int replacePage( struct dbSysHead *head, int bufferID, int mapNo, long pageNo )
 {
 	// 如果缓冲区的数据被修改过，则需要重新写回读到内存的file中
-	if( P_EDIT == (head->buff).map[mapNo].edit ) {
+	if( P_EDIT == (head->buff[bufferID]).map[mapNo].edit ) {
 		rewind(head->fpdesc);
-		fseek( head->fpdesc, head->desc.dataAddr + (head->buff).map[mapNo].pageNo*SIZE_PER_PAGE, SEEK_SET );
-		fwrite( head->buff.data[mapNo], sizeof(char), SIZE_PER_PAGE, head->fpdesc );
+		fseek( head->fpdesc, head->desc.dataAddr + (head->buff[bufferID]).map[mapNo].pageNo*SIZE_PER_PAGE, SEEK_SET );
+		fwrite( head->buff[bufferID].data[mapNo], sizeof(char), SIZE_PER_PAGE, head->fpdesc );
 	}
 	// 从文件中读入在所有页中是pageNo的页，放入缓冲区
 	rewind(head->fpdesc);
 	fseek( head->fpdesc, head->desc.dataAddr + pageNo*SIZE_PER_PAGE, SEEK_SET  );
-	fread( head->buff.data[mapNo], sizeof(char), SIZE_PER_PAGE, head->fpdesc );
-	head->buff.map[mapNo].edit = P_UNEDIT;
-	head->buff.map[mapNo].pageNo = pageNo;
+	fread( head->buff[bufferID].data[mapNo], sizeof(char), SIZE_PER_PAGE, head->fpdesc );
+	head->buff[bufferID].map[mapNo].edit = P_UNEDIT;
+	head->buff[bufferID].map[mapNo].pageNo = pageNo;
 	return 0;
 }
 
@@ -70,9 +70,9 @@ int replacePage( struct dbSysHead *head, int mapNo, long pageNo )
  * @author cshizhe
  * @date 2015/10/20 
  **/
-int scheBuff( struct dbSysHead *head )
+int scheBuff( struct dbSysHead *head, int bufferID)
 {
-	return LRU(head);
+	return LRU(head, bufferID);
 }
 
 /**
@@ -84,18 +84,18 @@ int scheBuff( struct dbSysHead *head )
 * @author cshizhe
 * @date 2015/10/20
 **/
-int LRU(struct dbSysHead *head)
+int LRU(struct dbSysHead *head, int bufferID)
 {
 	int i;
 	int min;
 
 	min = 0;
 	for (i = 0; i<SIZE_BUFF; i++){
-		if (head->buff.map[i].pageNo < 0) {
+		if (head->buff[bufferID].map[i].pageNo < 0) {
 			return i;
 		}
 		else {
-			if (head->buff.map[i].vstTime < head->buff.map[min].vstTime) {
+			if (head->buff[bufferID].map[i].vstTime < head->buff[bufferID].map[min].vstTime) {
 				min = i;
 			}
 		}
@@ -112,7 +112,7 @@ int LRU(struct dbSysHead *head)
 * @author cshizhe
 * @date 2015/10/20
 **/
-int FIFO(struct dbSysHead *head)
+int FIFO(struct dbSysHead *head, int bufferID)
 {
 	int i;
 	int min;
@@ -120,12 +120,12 @@ int FIFO(struct dbSysHead *head)
 	min = 0;
 	for (i = 0; i<SIZE_BUFF; i++){
 		// 如果当前改缓冲页面为空
-		if (head->buff.map[i].pageNo < 0) {
+		if (head->buff[bufferID].map[i].pageNo < 0) {
 			return i;
 		}
 		// 如果缓冲区已满，则替换最早读入缓冲区的页面
 		else {
-			if (head->buff.map[i].loadTime < head->buff.map[min].loadTime) {
+			if (head->buff[bufferID].map[i].loadTime < head->buff[bufferID].map[min].loadTime) {
 				min = i;
 			}
 		}
@@ -144,28 +144,28 @@ int FIFO(struct dbSysHead *head)
  * @author cshizhe
  * @date 2015/10/20 
  **/
-int reqPage( struct dbSysHead *head, long query )
+int reqPage( struct dbSysHead *head, int bufferID, long query )
 {
 	int i;
 	int mapNo;
 
 	// 查询缓冲区中是否存在query的页
-	mapNo = queryPage( head, query );
+	mapNo = queryPage( head, bufferID, query );
 	// 如果不存在，则利用调度算法调入缓冲区中
 	if( BUFF_NOT_HIT == mapNo ) {
-		mapNo = scheBuff( head );
-		replacePage( head, mapNo, query );
+		mapNo = scheBuff( head, bufferID );
+		replacePage( head, bufferID, mapNo, query );
 	}
 	// 读入后，系统相对时间片增加，同时修改该页的读入和访问时间
-	head->buff.curTimeStamp++;
-	head->buff.map[mapNo].vstTime = head->buff.curTimeStamp;
-	head->buff.map[mapNo].loadTime = head->buff.curTimeStamp;
+	head->buff[bufferID].curTimeStamp++;
+	head->buff[bufferID].map[mapNo].vstTime = head->buff[bufferID].curTimeStamp;
+	head->buff[bufferID].map[mapNo].loadTime = head->buff[bufferID].curTimeStamp;
 	// 如果相对时间片达到long的最大长度，全部时间都归0
-	if( (1<<30) == head->buff.curTimeStamp ) {
+	if( (1<<30) == head->buff[bufferID].curTimeStamp ) {
 		for( i=0; i<SIZE_BUFF; i++ ) {
-			head->buff.map[i].loadTime = 0;
-			head->buff.map[i].vstTime = 0;
-			head->buff.curTimeStamp = 0;
+			head->buff[bufferID].map[i].loadTime = 0;
+			head->buff[bufferID].map[i].vstTime = 0;
+			head->buff[bufferID].curTimeStamp = 0;
 		}
 	}
 	return mapNo;

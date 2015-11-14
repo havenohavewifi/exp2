@@ -67,15 +67,15 @@ long mapPage( struct dbSysHead *head, long fid, long num )
  * @author tianzhenwu
  * @date 2015/10/20
  **/
-int readInPage( struct dbSysHead *head, long pgID,long pos,long length, void *des )
+int readInPage( struct dbSysHead *head, int bufferID, long pgID,long pos,long length, void *des )
 {
 	int nPage;
 
 	if( pos + length > SIZE_PER_PAGE ) {
 		isAvail(NULL,"readInPage",PAGE_BOUND);
 	}
-	nPage = reqPage( head, pgID );
-	memcpy( des, (head->buff).data[nPage]+pos, length );
+	nPage = reqPage( head, bufferID, pgID );
+	memcpy( des, (head->buff[bufferID]).data[nPage]+pos, length );
 	return 0;
 }
 
@@ -94,16 +94,16 @@ int readInPage( struct dbSysHead *head, long pgID,long pos,long length, void *de
  * @author tianzhenwu
  * @date 2015/10/20
  **/
-int writeInPage( struct dbSysHead *head, long pgID, long pos, long length, void *des )
+int writeInPage( struct dbSysHead *head, int bufferID, long pgID, long pos, long length, void *des )
 {
 	int nPage;
 
 	if( pos + length > SIZE_PER_PAGE ) {
 		isAvail(NULL,"writeInPage",PAGE_BOUND);
 	}
-	nPage = reqPage(head,pgID);
-	memcpy( (head->buff).data[nPage]+pos, des, length );
-	head->buff.map[nPage].edit = P_EDIT;
+	nPage = reqPage(head, bufferID, pgID);
+	memcpy( (head->buff[bufferID]).data[nPage]+pos, des, length );
+	head->buff[bufferID].map[nPage].edit = P_EDIT;
 	return 0;
 }
 
@@ -122,7 +122,7 @@ int writeInPage( struct dbSysHead *head, long pgID, long pos, long length, void 
  * @author tianzhenwu
  * @date 2015/10/20
  **/
-int wtFile( struct dbSysHead *head, long fid, long pos, long length, void *des)
+int wtFile( struct dbSysHead *head, int bufferID, long fid, long pos, long length, void *des)
 {
 	int i;
 	int idx;
@@ -152,7 +152,7 @@ int wtFile( struct dbSysHead *head, long fid, long pos, long length, void *des)
 		rSta = (pos+pnt) - ( (pos+pnt)/SIZE_PER_PAGE ) * SIZE_PER_PAGE;
 		rEnd = ( (i+1)*SIZE_PER_PAGE>(pos+length)) ? ((pos+length) - ((pos+length)/SIZE_PER_PAGE)*SIZE_PER_PAGE) : SIZE_PER_PAGE ;
 		pageMap = mapPage( head, fid, i);
-		writeInPage( head, pageMap, rSta, rEnd - rSta, tmp+pnt );
+		writeInPage( head, bufferID, pageMap, rSta, rEnd - rSta, tmp+pnt );
 		pnt += (rEnd-rSta);
 	}
 	free(tmp);
@@ -174,7 +174,7 @@ int wtFile( struct dbSysHead *head, long fid, long pos, long length, void *des)
  * @author tianzhenwu
  * @date 2015/10/20
  **/
-int rdFile( struct dbSysHead *head, long fid, long pos, long length, void *des)
+int rdFile( struct dbSysHead *head, int bufferID, long fid, long pos, long length, void *des)
 {
 	int i;
 	int idx;
@@ -202,7 +202,7 @@ int rdFile( struct dbSysHead *head, long fid, long pos, long length, void *des)
 		rSta = (pos+pnt) - ( (pos+pnt)/SIZE_PER_PAGE ) * SIZE_PER_PAGE;
 		rEnd = ( (i+1)*SIZE_PER_PAGE>(pos+length)) ? ((pos+length) - ((pos+length)/SIZE_PER_PAGE)*SIZE_PER_PAGE) : SIZE_PER_PAGE ;
 		pageMap = mapPage( head, fid, i);
-		readInPage( head, pageMap, rSta, rEnd - rSta, tmp+pnt );
+		readInPage( head, bufferID, pageMap, rSta, rEnd - rSta, tmp+pnt );
 		pnt += (rEnd-rSta);
 	}
 	memcpy( des, tmp, length);

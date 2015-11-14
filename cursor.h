@@ -32,7 +32,7 @@ class RecordCursor
 {
 public:
     // construct function
-    RecordCursor(struct dbSysHead *head, long fid, long recordLength) {
+    RecordCursor(struct dbSysHead *head, long fid, long recordLength, int bufferID) {
         int idx = queryFileID(head, fid);
         if(idx < 0) {
             cout << fid << "file doesn't exist!" << endl;
@@ -43,6 +43,7 @@ public:
         this->recordLength = recordLength;
         this->cLogicPage = -1;
         this->cPhysicalPage = -1;
+        this->bufferID = bufferID;
         this->cBufferPage = 0;
         this->bufferOffset = 0;
         this->start = true;
@@ -54,6 +55,7 @@ public:
     long getcLogicLocation();
     long getcLogicPage();
     long getcBufferOffset();
+    int getBufferID();
     
 private:
     struct dbSysHead *head;     //
@@ -61,6 +63,7 @@ private:
     long cLogicPage;          // current logical page ID in the table
     long cPhysicalPage;
     long filePageNum;         // the total number of pages in the table
+    int bufferID;            // the current buffer block
     long cBufferPage;         // the current page in the buffer
     long bufferOffset;        // the current offset in the page
     long recordLength;        // record length

@@ -16,7 +16,7 @@
  **/
 int sysUpdate( struct dbSysHead *head )
 {	
-	int i;
+	int i, k;
 
 	rewind( head->fpdesc );
 	fwrite( &(head->desc), sizeof(struct SysDesc), 1, head->fpdesc );
@@ -25,13 +25,14 @@ int sysUpdate( struct dbSysHead *head )
 	fseek( head->fpdesc, head->desc.bitMapAddr, SEEK_SET );
 	fwrite( head->bitMap, sizeof(char), head->desc.sizeBitMap, head->fpdesc );
 
-	for( i=0; i<SIZE_BUFF; i++ ) {
-		if( P_EDIT == head->buff.map[i].edit ) {
-			rewind( head->fpdesc );
-			fseek( head->fpdesc, head->desc.dataAddr + SIZE_PER_PAGE * head->buff.map[i].pageNo, SEEK_SET );
-			fwrite( head->buff.data[i], sizeof(char), SIZE_PER_PAGE, head->fpdesc);
-			head->buff.map[i].edit = P_UNEDIT;
+	for (k=0; k<3; k++)
+		for( i=0; i<SIZE_BUFF; i++ ) {
+			if( P_EDIT == head->buff[k].map[i].edit ) {
+				rewind( head->fpdesc );
+				fseek( head->fpdesc, head->desc.dataAddr + SIZE_PER_PAGE * head->buff[k].map[i].pageNo, SEEK_SET );
+				fwrite( head->buff[k].data[i], sizeof(char), SIZE_PER_PAGE, head->fpdesc);
+				head->buff[k].map[i].edit = P_UNEDIT;
+			}
 		}
-	}
 	return 0;
 }

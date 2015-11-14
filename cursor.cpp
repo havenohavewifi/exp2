@@ -33,12 +33,12 @@ bool RecordCursor::getNextRecord(void *des) {
     if(this->start==true || (this->bufferOffset+recordLength)>SIZE_PER_PAGE) {
         this->cLogicPage += 1;
         long pageID = mapPage(this->head, this->fid, this->cLogicPage);
-        this->cBufferPage = reqPage(this->head, pageID);
+        this->cBufferPage = reqPage(this->head, this->bufferID, pageID);
         this->bufferOffset = 0;
         this->start = false;
     }
     // read the record into des
-    memcpy(des, this->head->buff.data[this->cBufferPage]+bufferOffset, sizeof(char)*recordLength);
+    memcpy(des, this->head->buff[this->bufferID].data[this->cBufferPage]+bufferOffset, sizeof(char)*recordLength);
     this->bufferOffset += recordLength;
     
     return true;
@@ -56,7 +56,9 @@ long RecordCursor::getcBufferOffset() {
     return this->cBufferPage;
 }
 
-
+int RecordCursor::getBufferID() {
+    return this->bufferID;
+}
 
 // int getNextPage(struct dbSysHead *head, long fid, long num) {
 

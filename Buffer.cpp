@@ -38,7 +38,7 @@ bool Buffer::AppendBuffer(const void * new_data, int new_size){
         }
     }
 bool Buffer::writeBuffer(struct dbSysHead * head,void * write_data, int write_size){
-        wtFile(head, fileID, pageID * SIZE_PER_PAGE, write_size,write_data);
+        wtFile(head, 0, fileID, pageID * SIZE_PER_PAGE, write_size,write_data);
         return true;
     };
 

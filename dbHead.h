@@ -5,9 +5,9 @@
 #include "err.h"
 #include "dataDictionary.h"
 
-#define DBMS_DAT "/Users/irene/Desktop/dbms.dat"
-#define Customer_tbl "/Users/irene/Desktop/customer.tbl"
-#define Index_Path "/Users/irene/Desktop/"
+#define DBMS_DAT "./dbms.dat"
+#define Customer_tbl "./customer.tbl"
+#define Index_Path "./"
 /*
 struct dbSysHead
 {
@@ -27,17 +27,17 @@ int getBit(unsigned long num, int pos);
 
 /*******************	buffManage.cpp   *******************/
 // ≤È—Ø“≥query£®»´æ÷“≥∫≈£© «∑Ò‘⁄ª∫≥Â«¯÷–
-int queryPage(struct dbSysHead *head, long query);
+int queryPage(struct dbSysHead *head, int bufferID, long query);
 // ”√pageNo£®»´æ÷“≥∫≈£©“≥ÃÊªªª∫≥Â«¯÷–œ¬±ÍŒ™mapNoµƒ“≥
-int replacePage(struct dbSysHead *head, int mapNo, long pageNo);
+int replacePage(struct dbSysHead *head, int bufferID, int mapNo, long pageNo);
 // ª∫≥Â«¯“≥√Êµ˜∂»À„∑®£¨ø…—°‘ÒLRUªÚ’ﬂFIFO
-int scheBuff(struct dbSysHead *head);
+int scheBuff(struct dbSysHead *head, int bufferID);
 // ª∫≥Â«¯“≥√Êµ˜∂»£∫LRU
-int LRU(struct dbSysHead *head);
+int LRU(struct dbSysHead *head, int bufferID);
 // ª∫≥Â«¯“≥√Êµ˜∂»£∫FIFO
-int FIFO(struct dbSysHead *head);
+int FIFO(struct dbSysHead *head, int bufferID);
 // œÚª∫≥Â«¯÷–«Î«Ûquery“≥√Ê£¨∑µªÿ∆‰‘⁄ª∫≥Â«¯÷–µƒœ¬±Í
-int reqPage(struct dbSysHead *head, long query);
+int reqPage(struct dbSysHead *head, int bufferID, long query);
 
 
 //	diskOpt.cpp
@@ -59,10 +59,10 @@ int extendFileSpace(struct dbSysHead *head, long fid, int extendPage);//¿©’�
 
 //	fileOpt.cpp
 long mapPage(struct dbSysHead *head, long fid, long num);
-int readInPage(struct dbSysHead *head, long pgID, long pos, long length, void *des);
-int writeInPage(struct dbSysHead *head, long pgID, long pos, long length, void *des);
-int rdFile(struct dbSysHead *head, long fid, long pos, long length, void *des);
-int wtFile(struct dbSysHead *head, long fid, long pos, long length, void *des);
+int readInPage(struct dbSysHead *head, int bufferID, long pgID, long pos, long length, void *des);
+int writeInPage(struct dbSysHead *head, int bufferID, long pgID, long pos, long length, void *des);
+int rdFile(struct dbSysHead *head, int bufferID, long fid, long pos, long length, void *des);
+int wtFile(struct dbSysHead *head, int bufferID, long fid, long pos, long length, void *des);
 
 //	init.cpp
 int initSys(struct dbSysHead *head);

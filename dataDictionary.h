@@ -37,7 +37,7 @@ struct relationDefine
 struct dbSysHead
 {
     struct SysDesc desc;
-    struct buffSpace buff;
+    struct buffSpace buff[3];   // 3 buffers for SPJ operations
     
     unsigned long *bitMap;
     struct relationDefine redef[MAX_FILE_NUM];		//  √ø“ª∏ˆ±Ìµƒπÿœµ∂®“Â
