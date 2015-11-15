@@ -42,3 +42,8 @@ bool Buffer::writeBuffer(struct dbSysHead * head,void * write_data, int write_si
         return true;
     };
 
+bool Buffer::writeBufferPage(struct dbSysHead * head,int buffer_id_,void * write_data, int write_size){
+    int nPage = pageID;
+    memcpy( (head->buff[buffer_id_]).data[nPage], write_data, write_size );
+    return true;
+}

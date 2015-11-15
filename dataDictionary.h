@@ -45,9 +45,9 @@ struct dbSysHead
     FILE *fpdesc;
 };
 
-int initRelation(struct dbSysHead *head, long fid, char *relationName, char *constructorName);//≥ı ºªØπÿœµ
+int initRelation(struct dbSysHead *head, long fid, const char *relationName, const char *constructorName);//≥ı ºªØπÿœµ
 int changeRecordNum(struct dbSysHead *head, long fid, int num);//∏¸∏ƒº«¬º◊‹ ˝
-int initAttribute(struct dbSysHead *head, long fid, char *name, int type, int length);//≥ı ºªØ“ª∏ˆ Ù–‘±Ì
+int initAttribute(struct dbSysHead *head, long fid, const char *name, int type, int length);//≥ı ºªØ“ª∏ˆ Ù–‘±Ì
 int initTable(struct dbSysHead *head, long fid);
 int showTable(struct dbSysHead *head, char* name);
 

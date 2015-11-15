@@ -27,6 +27,7 @@ public:
     bool AppendBuffer(const void * new_data, int new_size);
     //write one page to file(write from buffer to the disk)
     bool writeBuffer(struct dbSysHead * head, void * write_data, int write_size);
+    bool writeBufferPage(struct dbSysHead * head,int buffer_id_,void * write_data, int write_size);
 public:
     struct dbSysHead * filehead;
     //temporary is 1
@@ -44,4 +45,4 @@ public:
     
 };
 
-#endif /* defined(__loaddata__Buffer__) */
+#endif 

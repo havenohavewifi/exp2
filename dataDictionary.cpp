@@ -15,9 +15,10 @@
 extern "C" {
     #include <string.h>
 };
+ 
 #include <string>
 #include <cstdio>
-
+#include <iostream>
 #include "dataDictionary.h"
 int initTable(struct dbSysHead *head, long fid)
 {
@@ -68,10 +69,11 @@ int showTable(struct dbSysHead *head, char* name)
  * @author mengxi
  * @date 2015/11/4
  **/
-int initRelation(struct dbSysHead *head, long fid, char *relationName, char *constructorName)
+int initRelation(struct dbSysHead *head, long fid, const char *relationName, const char *constructorName)
 {
     int n;
     n = queryFileID(head, fid);
+    std::cout<<"datadict: "<<n<<std::endl;
     if ( n == -1)
     {
         printf("can't find file!\n");
@@ -124,13 +126,13 @@ int changeRecordNum(struct dbSysHead *head, long fid, int num)
  * @date 2015/11/4
  **/
  // change the diao yong de length
-int initAttribute(struct dbSysHead *head, long fid, char *name, int type, int length)
+int initAttribute(struct dbSysHead *head, long fid, const char *name, int type, int length)
 {
     
-    int n;
+    int n = queryFileID(head, fid);
     int pos;
     
-    if (n = queryFileID(head, fid) == -1)
+    if (n == -1)
     {
         printf("can't find file!\n");
         return -1;

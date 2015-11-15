@@ -17,12 +17,12 @@ void getOneRecord(char *oneRec, relationDefine dic){
         offset = dic.attribute[i].recordDeviation;
         if(dic.attribute[i].type == 1){
             int value= *((int *)(oneRec + offset));
-//            cout<<i<<":"<<value<<endl;
+            cout<<i<<":"<<value<<endl;
         }
         if(dic.attribute[i].type == 2){
             char * valuechar = (char *)malloc(sizeof(char)*dic.attribute[i].length);
             memcpy(valuechar, oneRec + offset ,dic.attribute[i].length);
-//            cout<<i<<":"<<valuechar<<endl;
+            cout<<i<<":"<<valuechar<<endl;
         }
     }
 }

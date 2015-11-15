@@ -41,6 +41,7 @@ int initSys(struct dbSysHead *head)
 			head->buff[k].map[i].edit = P_UNEDIT;
 		}
 		head->buff[k].curTimeStamp = 0;
+        head->buff[k].emptyOrnot = true;
 	}
     
 	fclose(fp);
@@ -95,19 +96,20 @@ int creaSysHead()
 	rewind(fp);
 	fwrite(&(sysHead.desc), sizeof(struct SysDesc), 1, fp);
 
-	sysHead.bitMap = (unsigned long *)malloc(sysHead.desc.sizeBitMap);
-	memset(sysHead.bitMap, -1, sysHead.desc.sizeBitMap);
-	rewind(fp);
-	fseek(fp, sysHead.desc.bitMapAddr, SEEK_SET);
-	fwrite(sysHead.bitMap, 1, sysHead.desc.sizeBitMap, fp);
-
 //    sysHead.redef = (struct relationDefine *)malloc(sizeof(struct relationDefine)* MAX_FILE_NUM);
     memset(sysHead.redef, 0 , sizeof(struct relationDefine)* MAX_FILE_NUM);
     rewind(fp);
     fseek(fp, sysHead.desc.dataDictionaryAddr, SEEK_SET);
     fwrite(&(sysHead.redef), sizeof(struct relationDefine)* MAX_FILE_NUM, 1, fp);
+
     
+	sysHead.bitMap = (unsigned long *)malloc(sysHead.desc.sizeBitMap);
+	memset(sysHead.bitMap, -1, sysHead.desc.sizeBitMap);
+	rewind(fp);
+	fseek(fp, sysHead.desc.bitMapAddr, SEEK_SET);
+	fwrite(sysHead.bitMap, 1, sysHead.desc.sizeBitMap, fp);
 	free(sysHead.bitMap);
+    
 	fclose(fp);
 
 	return 0;

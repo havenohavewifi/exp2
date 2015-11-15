@@ -44,6 +44,7 @@ public:
         this->cLogicPage = -1;
         this->cPhysicalPage = -1;
         this->bufferID = bufferID;
+//        head->buff[bufferID].emptyOrnot = false;
         this->cBufferPage = 0;
         this->bufferOffset = 0;
         this->start = true;

@@ -12,6 +12,9 @@
 #include "recorder_char_general.h"
 #include "indexOpt.h"
 #include "dataDictionary.h"
+#include "file.h"
+#include "tableScan.h"
+#include "cursorForTmptable.h"
 
 int init_database(struct dbSysHead *head)
 {
@@ -39,9 +42,9 @@ int main()
 	*/
 	init_database(&head);
 	showDesc(&head);
-	
+
 //	printf("create file1...\n");
-//	fid1 = creatFileSpace(&head);//Œ™Œƒº˛“ª∑÷≈‰ø’º‰
+	fid1 = creatFileSpace(&head);//Œ™Œƒº˛“ª∑÷≈‰ø’º‰
 //	showFileDesc(&head);
 /*	printf("extend 10 pages for file1...\n");
 	extendFileSpace(&head, fid1, 10);//¿©’π Æ“≥
@@ -67,28 +70,48 @@ int main()
 	recyFileSpace(&head, fid2);
 	showFileDesc(&head);*/
 
-	if(initTable(&head, fid1) == 0)
-		printf("1\n");
+//	if(initTable(&head, fid1) == 0)
+    if(initTable(&head, FIRST_FID) == 0)
+		printf("1 initTable\n");
 	if(showTable(&head, "customer") == -1 )
-		printf("2\n");
+		printf("2 showTable\n");
     //read customer.tbl and write into our file1, 一次性
-    loaddata(&head);
+    loaddata(&head, FIRST_FID);
     //use dictID to scan file1
-    int dictID = 0;
+/*
+    int dictID = 1;
     int scanPointer = 0;
     int rec_length = head.redef[dictID].recordLength;
-	printf("attributeName::%s", head.redef[dictID].attribute[0].attributeName);
-    RecordCursor scanTable(&head, 0, 1, rec_length);
+    RecordCursor scanTable(&head, 1, rec_length, 0);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
         scanPointer ++;
-        if(scanPointer > 30)
+        if(scanPointer > 230)
             getOneRecord(one_Row_, head.redef[dictID]); //get each attribute value and print
     }
     free(one_Row_);
-    
+*/
+    //Scan Table
+    struct relationDefine temp_data_dict[MAX_FILE_NUM];
+    TableScan(&head, FIRST_FID, temp_data_dict);
+    //get the output of tablescan, temporarily according to datadict1, other than temp_data_dict[1]
+    int buffer_ID_ = - temp_data_dict[0].fileID;   //find which buffer
+    int record_num_ = temp_data_dict[0].recordNum;
+    int record_len_ = temp_data_dict[0].recordLength;
+    RecordCursorTmp t1(&head,1,record_len_,buffer_ID_,record_num_);
+    cout<<buffer_ID_<<"~"<<record_len_<<"~"<<record_num_<<endl;
+    int scanPointer = 0;
+    int dictID = queryFileID(&head, FIRST_FID);
+    char * one_Row_ = (char *)malloc(sizeof(char)*record_len_);
+    while (true == t1.getNextRecord(one_Row_)) { //only scan
+        scanPointer ++;
+        if(scanPointer < 20)
+            getOneRecord(one_Row_, head.redef[dictID]); //get each attribute value and print
+    }
+    free(one_Row_);
     // create index
-	printf("recordNum:%d\n",head.redef[dictID].recordNum);
+/*
+    printf("recordNum:%d\n",head.redef[dictID].recordNum);
 	if(true == createIndexOn(&head, 1, "custkey")){
 		char* index_filename= "b_plus_tree_index_1custkey.dat";
 		
@@ -125,7 +148,7 @@ int main()
 	rdFile( &head, 0, 1, pos, rec_length,one_Row_);
 	printf("reading from index:\n");
 	getOneRecord(one_Row_, dic);
-    
+*/    
     
     showFileDesc(&head);
     exit_database(&head);

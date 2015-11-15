@@ -10,6 +10,6 @@
 #define loaddata_h
 
 
-void loaddata(struct dbSysHead * head);
+void loaddata(struct dbSysHead * head, int fid);
 
 #endif
