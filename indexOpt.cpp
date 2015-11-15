@@ -2,7 +2,6 @@ extern "C"{
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#include<string.h>
 }
 
 #include"dbHead.h"
@@ -38,6 +37,7 @@ bool createIndexOn(struct dbSysHead *head, long fid, char* column){
 	int location;
 	
 	index_filename = (char *)malloc( 3*NAMELENGTH + 50);
+	*index_filename = '\0';
 	index_filename = strcat(index_filename, Index_Path);
 	index_filename = strcat(index_filename,indexname);
 	index_filename = strcat(index_filename,fileID);
@@ -51,18 +51,18 @@ bool createIndexOn(struct dbSysHead *head, long fid, char* column){
 		isAvail(NULL,"createIndexOn",ARRAY);
 	}
 	int i;
-	for( i = 0; i <= head->redef[idx].attributeNum; i++) {
-		if( strcmp(column, head->redef[idx].attribute[i].attributeName) == 0)
+	for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
+		if( strcmp(column, head->redef[idx].getAttributeByNo(i).getName()) == 0)
 			break;
 	}	
 	//i属性序号超出属性个数
-	if(i > head->redef[idx].attributeNum){
+	if(i > head->redef[idx].getAttributeNum()){
 		printf("No such attribute.\n");
 		return false;
 	}
 		
 	//属性不是整型时，不建立索引，返回false
-	if( head->redef[idx].attribute[i].type != 1){
+	if( head->redef[idx].getAttributeByNo(i).getType() != 1){
 		printf("Not an int attribute.\n");
 		return false;
 	}
@@ -80,12 +80,12 @@ bool createIndexOn(struct dbSysHead *head, long fid, char* column){
 
     int scanPointer = 0;
 	int offset;
-    long rec_length = (long)(head->redef[idx].recordLength);
+    long rec_length = (long)(head->redef[idx].getRecordLength());
     // default use the first buffer block
     RecordCursor scanTable(head, 0, fid, rec_length);		
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
-		offset = head->redef[idx].attribute[i].recordDeviation;
+		offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
 		key = *((int *)(one_Row_ + offset));
 		location = scanTable.getcLogicLocation();
 		printf("key::%d, location::%d\n",key,location);
@@ -182,15 +182,15 @@ bool insertInIndex(struct dbSysHead *head, long fid, int position){
 	int i;
 	int offset;
 	int key;
-	long rec_length = (long)(head->redef[idx].recordLength);
+	long rec_length = (long)(head->redef[idx].getRecordLength());
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
 	rdFile( head, 0, fid, position, rec_length,one_Row_);
     
-	for( i = 0; i <= head->redef[idx].attributeNum; i++) {
+	for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
 		index_filename = (char *)malloc( 3*NAMELENGTH );
 		*index_filename = '\0';
 		column = (char *)malloc( NAMELENGTH );
-		strcpy(column, head->redef[idx].attribute[i].attributeName);
+		strcpy(column, head->redef[idx].getAttributeByNo(i).getName());
 		index_filename = strcat(index_filename,indexname);
 		index_filename = strcat(index_filename,fileID);
 		index_filename = strcat(index_filename,column);
@@ -200,7 +200,7 @@ bool insertInIndex(struct dbSysHead *head, long fid, int position){
 			break;
 		}
 		
-		offset = head->redef[idx].attribute[i].recordDeviation;
+		offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
 		key = *((int *)(one_Row_ + offset));
 		elem_insert.key = key;
 		elem_insert.pos = position;
@@ -246,15 +246,15 @@ bool deleteInIndex(struct dbSysHead *head, long fid, int position){
 	int i;
 	int offset;
 	int key;
-	long rec_length = (long)(head->redef[idx].recordLength);
+	long rec_length = (long)(head->redef[idx].getRecordLength());
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
 	rdFile( head, 0, fid, position, rec_length,one_Row_);
     
-	for( i = 0; i <= head->redef[idx].attributeNum; i++) {
+	for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
 		index_filename = (char *)malloc( 3*NAMELENGTH );
 		*index_filename = '\0';
 		column = (char *)malloc( NAMELENGTH );
-		strcpy(column, head->redef[idx].attribute[i].attributeName);
+		strcpy(column, head->redef[idx].getAttributeByNo(i).getName());
 		index_filename = strcat(index_filename,indexname);
 		index_filename = strcat(index_filename,fileID);
 		index_filename = strcat(index_filename,column);
@@ -264,7 +264,7 @@ bool deleteInIndex(struct dbSysHead *head, long fid, int position){
 			break;
 		}
     
-		offset = head->redef[idx].attribute[i].recordDeviation;
+		offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
 		key = *((int *)(one_Row_ + offset));
 		del(fp, key);
 		printf("deleting in %s\n",index_filename);

@@ -102,10 +102,10 @@ int creaSysHead()
 	fwrite(sysHead.bitMap, 1, sysHead.desc.sizeBitMap, fp);
 
 //    sysHead.redef = (struct relationDefine *)malloc(sizeof(struct relationDefine)* MAX_FILE_NUM);
-    memset(sysHead.redef, 0 , sizeof(struct relationDefine)* MAX_FILE_NUM);
+    memset(sysHead.redef, 0 , sizeof(relation)* MAX_FILE_NUM);
     rewind(fp);
     fseek(fp, sysHead.desc.dataDictionaryAddr, SEEK_SET);
-    fwrite(&(sysHead.redef), sizeof(struct relationDefine)* MAX_FILE_NUM, 1, fp);
+    fwrite(&(sysHead.redef), sizeof(relation)* MAX_FILE_NUM, 1, fp);
     
 	free(sysHead.bitMap);
 	fclose(fp);

@@ -40,8 +40,8 @@ int main()
 	init_database(&head);
 	showDesc(&head);
 	
-//	printf("create file1...\n");
-//	fid1 = creatFileSpace(&head);//Œ™Œƒº˛“ª∑÷≈‰ø’º‰
+	printf("create file1...\n");
+	fid1 = creatFileSpace(&head);//Œ™Œƒº˛“ª∑÷≈‰ø’º‰
 //	showFileDesc(&head);
 /*	printf("extend 10 pages for file1...\n");
 	extendFileSpace(&head, fid1, 10);//¿©’π Æ“≥
@@ -76,8 +76,8 @@ int main()
     //use dictID to scan file1
     int dictID = 0;
     int scanPointer = 0;
-    int rec_length = head.redef[dictID].recordLength;
-	printf("attributeName::%s", head.redef[dictID].attribute[0].attributeName);
+    int rec_length = head.redef[dictID].getRecordLength();
+	printf("attributeName::%s", head.redef[dictID].getAttributeByNo(0).getName());
     RecordCursor scanTable(&head, 0, 1, rec_length);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
@@ -86,7 +86,7 @@ int main()
             getOneRecord(one_Row_, head.redef[dictID]); //get each attribute value and print
     }
     free(one_Row_);
-    
+/*
     // create index
 	printf("recordNum:%d\n",head.redef[dictID].recordNum);
 	if(true == createIndexOn(&head, 1, "custkey")){
@@ -126,7 +126,7 @@ int main()
 	printf("reading from index:\n");
 	getOneRecord(one_Row_, dic);
     
-    
+   */ 
     showFileDesc(&head);
     exit_database(&head);
 	system("pause");
