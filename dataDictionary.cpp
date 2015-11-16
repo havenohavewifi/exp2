@@ -15,9 +15,10 @@
 extern "C" {
     #include <string.h>
 };
+ 
 #include <string>
 #include <cstdio>
-
+#include <iostream>
 #include "dataDictionary.h"
 
 attribute::attribute()
@@ -88,6 +89,7 @@ int relation::initRelation(struct dbSysHead *head, int fid, char *relationName, 
 
 int relation::changeRecordNum(int num)
 {
+<<<<<<< HEAD
 	this->recordNum = num;
 	return 0;
 }
@@ -95,6 +97,163 @@ int relation::changeRecordNum(int num)
 int relation::insertAttribute(char *name, int type, int length)
 {
 	if (this->attributeNum >= ATTRIBUTENUM)
+=======
+    for (int i = 0; i < MAX_FILE_NUM; i++)
+    {
+        if (strcmp(name, head->redef[i].relationName) == 0)
+        {
+            printf("dic id: %d\n",i);
+            printf("TableName: %s\n", head->redef[i].relationName);
+            printf("Constructor: %s\n", head->redef[i].constructor);
+            printf("AttributeNum: %d\n", head->redef[i].attributeNum);
+            for (int j = 0; j < head->redef[i].attributeNum; j++)
+            {
+                printf("%d:%s\n", j+1, head->redef[i].attribute[j].attributeName);
+            }
+            printf("RecordLength: %d\n",head->redef[i].recordLength);
+            return 0;
+        }
+    }
+    return -1;
+}
+
+
+
+/*
+ * @brief ≥ı ºªØπÿœµ
+ *
+ * @param [in] head  : struct dbSysHead *
+ * @param [in] fid   : long  Œƒº˛±Í ∂
+ * @param [in] relationName  : char* πÿœµ√˚
+ * @param [in] constructorName :char* Ω®¡¢’ﬂ√˚
+ * @return int
+ *
+ * @author mengxi
+ * @date 2015/11/4
+ **/
+int initRelation(struct dbSysHead *head, long fid, const char *relationName, const char *constructorName)
+{
+    int n;
+    n = queryFileID(head, fid);
+    std::cout<<"datadict: "<<n<<std::endl;
+    if ( n == -1)
+    {
+        printf("can't find file!\n");
+        return -1;
+    }
+    head->redef[n].fileID = fid;
+    strcpy(head->redef[n].relationName, relationName);
+    strcpy(head->redef[n].constructor, constructorName);
+    head->redef[n].attributeNum = 0;
+    head->redef[n].recordLength = 0;
+    changeRecordNum(head, fid, 0);
+    return 0;
+}
+
+/*
+ * @brief ∏¸∏ƒº«¬º◊‹ ˝
+ *
+ * @param [in] head  : struct dbSysHead *
+ * @param [in] fid   : long  Œƒº˛±Í ∂
+ * @param [in] num   : int  º«¬º◊‹ ˝
+ * @return int
+ *
+ * @author mengxi
+ * @date 2015/11/4
+ **/
+int changeRecordNum(struct dbSysHead *head, long fid, int num)
+{
+    int n;
+    
+    if ((n = queryFileID(head, fid)) == -1)
+    {
+        printf("can't find file!\n");
+        return -1;
+    }
+    head->redef[n].recordNum = num;
+    return 0;
+}
+
+/*
+ * @brief ≥ı ºªØ“ª∏ˆ Ù–‘±Ì
+ *
+ * @param [in] head  : struct dbSysHead *
+ * @param [in] fid   : long  Œƒº˛±Í ∂
+ * @param [in] name  : char*  Ù–‘√˚
+ * @param [in] type  : int   Ù–‘¿‡–Õ
+ * @param [in] length: int   Ù–‘≥§∂»
+ * @return int
+ *
+ * @author mengxi
+ * @date 2015/11/4
+ **/
+ // change the diao yong de length
+int initAttribute(struct dbSysHead *head, long fid, const char *name, int type, int length)
+{
+    
+    int n = queryFileID(head, fid);
+    int pos;
+    
+    if (n == -1)
+    {
+        printf("can't find file!\n");
+        return -1;
+    }
+    if (head->redef[n].attributeNum == ATTRIBUTENUM)
+    {
+        printf("too many attributes!\n");
+        return -1;
+    }
+    pos = head->redef[n].attributeNum;
+    strcpy(head->redef[n].attribute[pos].attributeName, name);
+    head->redef[n].attribute[pos].type = type;
+    head->redef[n].attribute[pos].length = length;  // the length should be the number of byte
+    if (pos == 0)
+    {
+        head->redef[n].attribute[pos].recordDeviation = 0;
+        // can simplify
+        switch (head->redef[n].attribute[pos].type)
+        {
+            case 1:head->redef[n].recordLength += sizeof(int);  break;
+            case 2:head->redef[n].recordLength += length*sizeof(char); break;
+            case 3:head->redef[n].recordLength += sizeof(date); break;
+        }
+    }
+    else
+    {
+        switch (head->redef[n].attribute[pos].type)
+        {
+            case 1:head->redef[n].attribute[pos].recordDeviation = head->redef[n].recordLength;
+                head->redef[n].recordLength += sizeof(int);  break;
+            case 2:head->redef[n].attribute[pos].recordDeviation = head->redef[n].recordLength;
+                head->redef[n].recordLength += length*sizeof(char); break;
+            case 3:head->redef[n].attribute[pos].recordDeviation = head->redef[n].recordLength;
+                head->redef[n].recordLength += sizeof(date); break;
+        }
+    }
+    head->redef[n].attributeNum++;
+    return 0;
+    
+}
+/*
+ * @brief …æ≥˝“ª∏ˆ Ù–‘±Ì
+ *
+ * @param [in] head  : struct dbSysHead *
+ * @param [in] fid   : long  Œƒº˛±Í ∂
+ * @param [in] name  : char*  Ù–‘√˚
+ * @return int
+ *
+ * @author mengxi
+ * @date 2015/11/4
+ **/
+/*
+ int deleteAttribute(struct dbSysHead *head, long fid, char *name)
+ {
+	int n;
+	int num;
+ 
+	if (n = queryFileID(head, fid) == -1)
+>>>>>>> 6935d6d5c26c9486420359d5298b7d1ad5e8c238
 	{
 		printf("too many attributes!\n");
 		return -1;

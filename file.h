@@ -26,15 +26,15 @@
 // ‚àÜ‚Ä∞√ÄÀö≈í∆í¬∫Àõ√∑‚Äì√Ä‚àÜ‚à´ƒ±‚àÇ¬∫‚àö¬™‚Äù‚Äì‚â•ÀÜ≈ì√∑¬£¬®‚Äù‚Äì‚Äù‚àö¬¨Ô£ø¬£√∏
 #define SEGMENT_ADDR (DATA_ADDR+SIZE_DATA_SPACE)
 
-
+/*
 // √ø∏ˆ∂ŒµƒπÃ∂®“≥√Ê ˝
 #define PAGE_PER_SEGMENT 28
 // ◊Ó¥Û¥Ê¥¢µƒ±Ì∏ˆ ˝
 #define MAX_FILE_NUM 64
 // µ⁄“ª∏ˆ±Ìµƒ±‡∫≈£¨¥”1ø™ º
-
+*/
 // ‚àö√∏‚àèÀÜ‚àÇ≈í¬µ∆íœÄ√É‚àÇ¬Æ‚Äú‚â•‚àö√ä¬†Àù
-#define PAGE_PER_SEGMENT 24
+#define PAGE_PER_SEGMENT 28
 // ‚óä√ì¬•√õ¬•√ä¬•¬¢¬µ∆í¬±√å‚àèÀÜ¬†Àù
 #define MAX_FILE_NUM 8
 // ¬µ‚ÅÑ‚Äú¬™‚àèÀÜ¬±√å¬µ∆í¬±‚Ä°‚à´‚âà¬£¬®¬•‚Äù1√∏‚Ñ¢¬†¬∫
@@ -117,6 +117,7 @@ struct buffSpace
 	char data[SIZE_BUFF][SIZE_PER_PAGE];	//	¬™‚à´‚â•√Ç¬´¬Ø¬†Àù√¶‚Ä∫√∏√à¬£¬®∆í√∏¬´‚àû‚Ä¶√ã√∑‚àöSIZE_BUFF√∏√à¬£¬®‚àö√∏‚Äú¬™√∏√à¬µ∆í¬•√õ‚Äì¬∞≈í‚Ñ¢‚Äú‚â•¬µ∆í¬•√õ‚Äì¬∞	
 	struct buffMap map[SIZE_BUFF];			//	¬∫¬´¬¨¬∫‚àö√∏‚Äú¬™‚àèÀÜ¬™‚à´‚â•√Ç¬´¬Ø√∏√à¬µ∆í‚Äì‚âà≈ì¬¢
 	long curTimeStamp;						//	∆í√∏¬´‚àû¬µ∆í≈ì‚Ä°‚àÇ‚Äò¬†¬±¬∫‚Ä∞¬•¬°
+    bool emptyOrnot; //true for empty, false for in use
 };
 
 typedef struct
