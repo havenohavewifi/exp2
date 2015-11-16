@@ -81,7 +81,8 @@ int main()
 /*
     int dictID = 1;
     int scanPointer = 0;
-    int rec_length = head.redef[dictID].recordLength;
+    int rec_length = head.redef[dictID].getRecordLength();
+	printf("attributeName::%s", head.redef[dictID].getAttributeByNo(0).getName());
     RecordCursor scanTable(&head, 1, rec_length, 0);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
@@ -92,12 +93,12 @@ int main()
     free(one_Row_);
 */
     //Scan Table
-    struct relationDefine temp_data_dict[MAX_FILE_NUM];
+    relation temp_data_dict[MAX_FILE_NUM];
     TableScan(&head, FIRST_FID, temp_data_dict);
     //get the output of tablescan, temporarily according to datadict1, other than temp_data_dict[1]
     int buffer_ID_ = - temp_data_dict[0].fileID;   //find which buffer
-    int record_num_ = temp_data_dict[0].recordNum;
-    int record_len_ = temp_data_dict[0].recordLength;
+    int record_num_ = temp_data_dict[0].getRecordNum();
+    int record_len_ = temp_data_dict[0].getRecordLength();
     RecordCursorTmp t1(&head,1,record_len_,buffer_ID_,record_num_);
     cout<<buffer_ID_<<"~"<<record_len_<<"~"<<record_num_<<endl;
     int scanPointer = 0;

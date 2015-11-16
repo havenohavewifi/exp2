@@ -13,5 +13,5 @@
 #include "file.h"
 #include "dataDictionary.h"
 //according to datadictionary, analyze each attribute value, need to be rewritten to get a certain attriute value and modify the return type
-void getOneRecord(char *oneRec, relationDefine dic);
+void getOneRecord(char *oneRec, relation dic);
 #endif /* defined(__loaddata__getaRecordbyCursor__) */

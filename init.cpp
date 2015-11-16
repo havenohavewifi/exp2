@@ -92,7 +92,7 @@ int creaSysHead()
 	sysHead.desc.curfid = FIRST_FID;
 	sysHead.desc.curFileNum = 0;
 	memset(sysHead.desc.fileDesc, 0, sizeof(struct FileDesc)*MAX_FILE_NUM);
-
+/*
 	rewind(fp);
 	fwrite(&(sysHead.desc), sizeof(struct SysDesc), 1, fp);
 
@@ -100,8 +100,8 @@ int creaSysHead()
     memset(sysHead.redef, 0 , sizeof(struct relationDefine)* MAX_FILE_NUM);
     rewind(fp);
     fseek(fp, sysHead.desc.dataDictionaryAddr, SEEK_SET);
-    fwrite(&(sysHead.redef), sizeof(struct relationDefine)* MAX_FILE_NUM, 1, fp);
-
+    fwrite(&(sysHead.redef), sizeof(relation)* MAX_FILE_NUM, 1, fp);
+*/
     
 	sysHead.bitMap = (unsigned long *)malloc(sysHead.desc.sizeBitMap);
 	memset(sysHead.bitMap, -1, sysHead.desc.sizeBitMap);

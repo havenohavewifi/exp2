@@ -1,37 +1,66 @@
-//
-//  dataDictionary.h
-//  exp2
-//
-//  Created by IreneWu on 15/11/11.
-//  Copyright (c) 2015年 IreneWu. All rights reserved.
-//
-
 #ifndef dataDictionary_h
 #define dataDictionary_h
 
 //#include <cstdio>
+extern "C"{
+#include <stdio.h>
+};
 #include "dbHead.h"
 
 #define NAMELENGTH  32
 #define ATTRIBUTENUM  10
+#define INT 1
+#define CHAR 2
+#define DATE 3
 
-struct attributeDefine
+class attribute
 {
-    char attributeName[NAMELENGTH];//Â±ûÊÄßÂêç
-    int type;//Êï¥Âûã„ÄÅÂ≠óÁ¨¶Âûã„ÄÅÊó•ÊúüÂûã
-    int length;//Â±ûÊÄßÈïøÂ∫¶
-    int recordDeviation;//ËÆ∞ÂΩïÂÜÖÂÅèÁßª
+public:
+    attribute();
+    attribute(attribute& AA);
+    ~attribute();
+    
+    int initAttribute(char *name, int type, int length, int deviation);
+    char *getName();
+    int getType();
+    int getLength();
+    int getRecordDeviation();
+    
+private:
+    char attributeName[NAMELENGTH];//属性名
+    int type;//属性类型
+    int length;//属性长度
+    int recordDeviation;//记录内偏移
 };
 
-struct relationDefine
+
+class relation
 {
-    long fileID;//文件标识
-    char relationName[NAMELENGTH];//ÂÖ≥Á≥ªÂêç
-    char constructor[NAMELENGTH];//Âª∫Á´ãËÄÖ
-    int attributeNum;//Â±ûÊÄß‰∏™Êï∞
-    int recordLength;//ËÆ∞ÂΩïÈïøÂ∫¶
-    int recordNum;//ËÆ∞ÂΩïÊÄªÊï∞
-    struct attributeDefine attribute[ATTRIBUTENUM];//Â±ûÊÄßÂÆö‰πâÊåáÈíà
+public:
+    relation();
+    relation(relation& RR);
+    ~relation();
+    int initRelation(struct dbSysHead *head, int fid, char *relationName, char *constructorName);
+    int changeRecordNum(int num);
+    int insertAttribute(char *name, int type, int length);
+    char *getRelationName();
+    char *getConstructor();
+    int getAttributeNum();
+    int getRecordLength();
+    int getRecordNum();
+    attribute getAttributeByName(char *name);
+    attribute getAttributeByNo(int no);
+    
+public:
+    long fileID;
+private:
+//    long fileID;//文件标识
+    char relationName[NAMELENGTH];//关系名
+    char constructor[NAMELENGTH];//建立者
+    int attributeNum;//属性个数
+    int recordLength;//记录长度
+    int recordNum;//记录个数
+    attribute atb[ATTRIBUTENUM];//属性表
 };
 
 struct dbSysHead
@@ -40,15 +69,10 @@ struct dbSysHead
     struct buffSpace buff[3];   // 3 buffers for SPJ operations
     
     unsigned long *bitMap;
-    struct relationDefine redef[MAX_FILE_NUM];		//  √ø“ª∏ˆ±Ìµƒπÿœµ∂®“Â
-    //    struct relationDefine * redef;
+    relation redef[MAX_FILE_NUM];		//关系数据字典
     FILE *fpdesc;
 };
 
-int initRelation(struct dbSysHead *head, long fid, const char *relationName, const char *constructorName);//≥ı ºªØπÿœµ
-int changeRecordNum(struct dbSysHead *head, long fid, int num);//∏¸∏ƒº«¬º◊‹ ˝
-int initAttribute(struct dbSysHead *head, long fid, const char *name, int type, int length);//≥ı ºªØ“ª∏ˆ Ù–‘±Ì
 int initTable(struct dbSysHead *head, long fid);
 int showTable(struct dbSysHead *head, char* name);
-
-#endif /* defined(__exp2__dataDictionary__) */
+#endif

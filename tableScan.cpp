@@ -12,10 +12,10 @@
 #include "file.h"
 #include "dataDictionary.h"
 #include <iostream>
-void TableScan(struct dbSysHead * head,int fileID, struct relationDefine * temp_datadic){
+void TableScan(struct dbSysHead * head,int fileID, relation * temp_datadic){
     int fid = queryFileID(head, fileID);
     int dictID = fid;
-    int original_rec_length = head->redef[dictID].recordLength; //record_length in original table
+    int original_rec_length = head->redef[dictID].getRecordLength(); //record_length in original table
     int size_per_record = original_rec_length;   //each record length in new temp table, in case SPJ use
     //look up which buffer is empty
     int buffer_id_ ;
@@ -60,8 +60,8 @@ void TableScan(struct dbSysHead * head,int fileID, struct relationDefine * temp_
         free(one_Row_);
         temp_datadic[dictID] = head->redef[0]; //wrong, need to wait class copy
         temp_datadic[dictID].fileID = -buffer_id_; //negative number for temp datadict, value is for which buffer
-        temp_datadic[dictID].recordNum = k;
-        temp_datadic[dictID].recordLength = size_per_record;
-        strcpy(temp_datadic[dictID].relationName ,"temp datadict 1");
+        temp_datadic[dictID].changeRecordNum (k);
+//        temp_datadic[dictID].recordLength = size_per_record;
+//        strcpy(temp_datadic[dictID].relationName ,"temp datadict 1");
     }
 }

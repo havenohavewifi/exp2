@@ -11,17 +11,18 @@
 #include "dbHead.h"
 #include "indexOpt.h"
 #include "dataDictionary.h"
-
+#include <iostream>
 
 long insertOneRecord(struct dbSysHead *head , int fileID, char * oneRow){
     int fPhysicalID = queryFileID(head , fileID);
-    relationDefine dic = head->redef[fPhysicalID];
+//did this make change??
+    relation dic = head->redef[fPhysicalID];
     long pos = (head->desc.fileDesc[fPhysicalID].filePageNum - 1) * SIZE_PER_PAGE + head->desc.fileDesc[fPhysicalID].filePageEndPos;
-    wtFile(head, 0, 1, pos, dic.recordLength, oneRow);
-    head->desc.fileDesc[fPhysicalID].filePageEndPos += dic.recordLength;
-    dic.recordNum ++;
+    wtFile(head, 0, 1, pos, dic.getRecordLength(), oneRow);
+    head->desc.fileDesc[fPhysicalID].filePageEndPos += dic.getRecordLength();
+    dic.changeRecordNum(dic.getRecordNum()+1);
 	
 	if(true==insertInIndex(head, fileID, pos))
-		printf("true\n");
+        std::cout<<"insert in index true"<<std::endl;
 	return pos;
 }
