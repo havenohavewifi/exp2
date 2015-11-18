@@ -93,7 +93,7 @@ int main()
     free(one_Row_);
 */
     //Scan Table
-    relation temp_data_dict[MAX_FILE_NUM];
+    relation * temp_data_dict = new relation[MAX_FILE_NUM];
     TableScan(&head, FIRST_FID, temp_data_dict);
     //get the output of tablescan, temporarily according to datadict1, other than temp_data_dict[1]
     int buffer_ID_ = - temp_data_dict[0].fileID;   //find which buffer
@@ -107,7 +107,7 @@ int main()
     while (true == t1.getNextRecord(one_Row_)) { //only scan
         scanPointer ++;
         if(scanPointer < 20)
-            getOneRecord(one_Row_, head.redef[dictID]); //get each attribute value and print
+            getOneRecord(one_Row_, &head.redef[dictID]); //get each attribute value and print
     }
     free(one_Row_);
     // create index

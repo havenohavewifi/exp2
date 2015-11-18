@@ -67,8 +67,9 @@ int creaSysHead()
 	fp = fopen(DBMS_DAT, "wb");
 	isAvail(fp, "creaSysHead", FOPEN);
 	rewind(fp);
-	fseek(fp, BITMAP_ADDR + SIZE_BIT_MAP + SIZE_DATA_SPACE, SEEK_SET);
-	ch = '\0';
+//	fseek(fp, BITMAP_ADDR + SIZE_BIT_MAP + SIZE_DATA_SPACE, SEEK_SET);
+    fseek(fp, DICTIONARY_ADDR +DICTIONARY_SIZE +SIZE_DATA_SPACE, SEEK_SET);
+    ch = '\0';
 	fwrite(&ch, sizeof(char), 1, fp);
 
 	/*
@@ -92,11 +93,11 @@ int creaSysHead()
 	sysHead.desc.curfid = FIRST_FID;
 	sysHead.desc.curFileNum = 0;
 	memset(sysHead.desc.fileDesc, 0, sizeof(struct FileDesc)*MAX_FILE_NUM);
-/*
+
 	rewind(fp);
 	fwrite(&(sysHead.desc), sizeof(struct SysDesc), 1, fp);
 
-//    sysHead.redef = (struct relationDefine *)malloc(sizeof(struct relationDefine)* MAX_FILE_NUM);
+/*    sysHead.redef = (struct relationDefine *)malloc(sizeof(struct relationDefine)* MAX_FILE_NUM);
     memset(sysHead.redef, 0 , sizeof(struct relationDefine)* MAX_FILE_NUM);
     rewind(fp);
     fseek(fp, sysHead.desc.dataDictionaryAddr, SEEK_SET);

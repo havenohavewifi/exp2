@@ -35,8 +35,8 @@ void loaddata(struct dbSysHead * head, int fid)
     else{
         int n = queryFileID(head, fid);
         std::cout<<"datadict: "<<n<<std::endl;
-        relation dic = (*head).redef[0];
-        int size_per_record = dic.getRecordLength();
+        relation *dic = &(*head).redef[0];
+        int size_per_record = dic->getRecordLength();
         int file_id_ = 1;
         char *oneRec = (char *)malloc(sizeof(char)*size_per_record);
         string tmp;
@@ -72,7 +72,7 @@ void loaddata(struct dbSysHead * head, int fid)
         head->desc.fileDesc[fPhysicalID].filePageEndPos = t.current_size_;
         head->desc.fileDesc[fPhysicalID].filePageNum = t.pageID;
         //Attention
-        dic.changeRecordNum(k);
+        dic->changeRecordNum(k);
         
         cout<<head->redef[n].getRecordLength()<<"---datadict length / Num:";
         cout<<head->redef[n].getRecordNum()<<endl;;
