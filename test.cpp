@@ -45,6 +45,7 @@ int main()
 
 //	printf("create file1...\n");
 	fid1 = creatFileSpace(&head);//Œ™Œƒº˛“ª∑÷≈‰ø’º‰
+    fid2 = creatFileSpace(&head);
 //	showFileDesc(&head);
 /*	printf("extend 10 pages for file1...\n");
 	extendFileSpace(&head, fid1, 10);//¿©’π Æ“≥
@@ -72,11 +73,17 @@ int main()
 
 //	if(initTable(&head, fid1) == 0)
     if(initTable(&head, FIRST_FID) == 0)
-		printf("1 initTable\n");
+		printf("1 initTable: customer.tbl\n");
 	if(showTable(&head, "customer") == -1 )
-		printf("2 showTable\n");
+		printf("2 showTable: customer\n");
+    
+    if(initTable(&head, FIRST_FID+1) == 0)
+        printf("1 initTable: nation.tbl\n");
+    if(showTable(&head, "nation") == -1 )
+        printf("2 showTable: nation\n");
     //read customer.tbl and write into our file1, 一次性
     loaddata(&head, FIRST_FID);
+    loaddata(&head, FIRST_FID + 1);
     //use dictID to scan file1
 /*
     int dictID = 1;
