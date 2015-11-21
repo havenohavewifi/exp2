@@ -18,3 +18,4 @@ $(TARGET): $(OBJS)
 
 clean:
 	rm -f *.o $(TARGET)
+	rm dbms.dat

@@ -67,8 +67,9 @@ int creaSysHead()
 	fp = fopen(DBMS_DAT, "wb");
 	isAvail(fp, "creaSysHead", FOPEN);
 	rewind(fp);
-	fseek(fp, BITMAP_ADDR + SIZE_BIT_MAP + SIZE_DATA_SPACE, SEEK_SET);
-	ch = '\0';
+//	fseek(fp, BITMAP_ADDR + SIZE_BIT_MAP + SIZE_DATA_SPACE, SEEK_SET);
+    fseek(fp, DICTIONARY_ADDR +DICTIONARY_SIZE +SIZE_DATA_SPACE, SEEK_SET);
+    ch = '\0';
 	fwrite(&ch, sizeof(char), 1, fp);
 
 	/*
@@ -96,16 +97,12 @@ int creaSysHead()
 	rewind(fp);
 	fwrite(&(sysHead.desc), sizeof(struct SysDesc), 1, fp);
 
-//    sysHead.redef = (struct relationDefine *)malloc(sizeof(struct relationDefine)* MAX_FILE_NUM);
-    memset(sysHead.redef, 0 , sizeof(relation)* MAX_FILE_NUM);
+/*    sysHead.redef = (struct relationDefine *)malloc(sizeof(struct relationDefine)* MAX_FILE_NUM);
+    memset(sysHead.redef, 0 , sizeof(struct relationDefine)* MAX_FILE_NUM);
     rewind(fp);
     fseek(fp, sysHead.desc.dataDictionaryAddr, SEEK_SET);
-<<<<<<< HEAD
     fwrite(&(sysHead.redef), sizeof(relation)* MAX_FILE_NUM, 1, fp);
-=======
-    fwrite(&(sysHead.redef), sizeof(struct relationDefine)* MAX_FILE_NUM, 1, fp);
-
->>>>>>> 6935d6d5c26c9486420359d5298b7d1ad5e8c238
+*/
     
 	sysHead.bitMap = (unsigned long *)malloc(sysHead.desc.sizeBitMap);
 	memset(sysHead.bitMap, -1, sysHead.desc.sizeBitMap);

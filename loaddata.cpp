@@ -33,15 +33,10 @@ void loaddata(struct dbSysHead * head, int fid)
         cout<<"open file failure"<<endl;
     }
     else{
-<<<<<<< HEAD
-        relation dic = (*head).redef[0];
-        int size_per_record = dic.getRecordLength();
-=======
         int n = queryFileID(head, fid);
         std::cout<<"datadict: "<<n<<std::endl;
-        relationDefine dic = (*head).redef[n];
-        int size_per_record = dic.recordLength;
->>>>>>> 6935d6d5c26c9486420359d5298b7d1ad5e8c238
+        relation *dic = &(*head).redef[0];
+        int size_per_record = dic->getRecordLength();
         int file_id_ = 1;
         char *oneRec = (char *)malloc(sizeof(char)*size_per_record);
         string tmp;
@@ -77,14 +72,10 @@ void loaddata(struct dbSysHead * head, int fid)
         head->desc.fileDesc[fPhysicalID].filePageEndPos = t.current_size_;
         head->desc.fileDesc[fPhysicalID].filePageNum = t.pageID;
         //Attention
-<<<<<<< HEAD
-        dic.changeRecordNum(k);
-=======
-        changeRecordNum(head, file_id_, k);
->>>>>>> 6935d6d5c26c9486420359d5298b7d1ad5e8c238
+        dic->changeRecordNum(k);
         
-        cout<<head->redef[n].recordLength<<"---datadict length / Num:";
-        cout<<head->redef[n].recordNum<<endl;;
+        cout<<head->redef[n].getRecordLength()<<"---datadict length / Num:";
+        cout<<head->redef[n].getRecordNum()<<endl;;
         free(oneRec);
         
 //打印几个字符串检查一下
