@@ -15,6 +15,7 @@
 #include "file.h"
 #include "tableScan.h"
 #include "cursorForTmptable.h"
+#include "project.h"
 
 int init_database(struct dbSysHead *head)
 {
@@ -32,6 +33,20 @@ int exit_database(struct dbSysHead *head)
 	return 0;
 }
 
+int showRelation(relation *r)
+{
+	printf("TableName: %s\n", r->getRelationName());
+	printf("Constructor: %s\n", r->getConstructor());
+	printf("AttributeNum: %d\n", r->getAttributeNum());
+	for (int j = 0; j < r->getAttributeNum(); j++)
+	{
+		printf("%d:%s\n", j + 1, r->getAttributeByNo(j).getName());
+	}
+	printf("RecordLength: %d\n", r->getRecordLength());
+	return 0;
+}
+
+
 int main()
 {
 	struct dbSysHead head;
@@ -45,7 +60,6 @@ int main()
 
 //	printf("create file1...\n");
 	fid1 = creatFileSpace(&head);//Œ™Œƒº˛“ª∑÷≈‰ø’º‰
-    fid2 = creatFileSpace(&head);
 //	showFileDesc(&head);
 /*	printf("extend 10 pages for file1...\n");
 	extendFileSpace(&head, fid1, 10);//¿©’π Æ“≥
@@ -72,18 +86,12 @@ int main()
 	showFileDesc(&head);*/
 
 //	if(initTable(&head, fid1) == 0)
-    if(initTable(&head, FIRST_FID) == 0)
-		printf("1 initTable: customer.tbl\n");
+       if(initTable(&head, FIRST_FID) == 0)
+		printf("1 initTable\n");
 	if(showTable(&head, "customer") == -1 )
-		printf("2 showTable: customer\n");
-    
-    if(initTable(&head, FIRST_FID+1) == 0)
-        printf("1 initTable: nation.tbl\n");
-    if(showTable(&head, "nation") == -1 )
-        printf("2 showTable: nation\n");
+		printf("2 showTable\n");
     //read customer.tbl and write into our file1, 一次性
-    loaddata(&head, FIRST_FID);
-    loaddata(&head, FIRST_FID + 1);
+     loaddata(&head, FIRST_FID);
     //use dictID to scan file1
 /*
     int dictID = 1;
@@ -108,7 +116,7 @@ int main()
     int record_len_ = temp_data_dict[0].getRecordLength();
     RecordCursorTmp t1(&head,1,record_len_,buffer_ID_,record_num_);
     cout<<buffer_ID_<<"~"<<record_len_<<"~"<<record_num_<<endl;
-    int scanPointer = 0;
+/*    int scanPointer = 0;
     int dictID = queryFileID(&head, FIRST_FID);
     char * one_Row_ = (char *)malloc(sizeof(char)*record_len_);
     while (true == t1.getNextRecord(one_Row_)) { //only scan
@@ -116,7 +124,13 @@ int main()
         if(scanPointer < 20)
             getOneRecord(one_Row_, &head.redef[dictID]); //get each attribute value and print
     }
-    free(one_Row_);
+    free(one_Row_);*/
+	relation result;
+	result.init("customer", "TianzhenWu");
+	result.insertAttribute("name", 2, 64);
+	result.insertAttribute("phone", 2, 64);
+	showRelation(&result);
+	project(&head, &temp_data_dict[0], &result);
     // create index
 /*
     printf("recordNum:%d\n",head.redef[dictID].recordNum);

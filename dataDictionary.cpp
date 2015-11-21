@@ -106,6 +106,16 @@ int relation::initRelation(struct dbSysHead *head, int fid, char *relationName, 
     return 0;
 }
 
+int relation::init(char *relationName, char *constructorName)
+{
+	strcpy(this->relationName, relationName);
+	strcpy(this->constructor, constructorName);
+	this->attributeNum = 0;
+	this->recordLength = 0;
+	this->recordNum = 0;
+	return 0;
+}
+
 int relation::changeRecordNum(int num)
 {
     this->recordNum = num;
@@ -189,8 +199,6 @@ int initTable(struct dbSysHead *head, long fid)
         printf("can't find file!\n");
         return -1;
     }
-    if (fid == 1) {
-    
     head->redef[n].initRelation(head, fid, "customer", "TianzhenWu");
     head->redef[n].insertAttribute("custkey", 1, 4);
     head->redef[n].insertAttribute("name", 2, 64);
@@ -200,15 +208,6 @@ int initTable(struct dbSysHead *head, long fid)
     head->redef[n].insertAttribute("acctbal", 2, 64);
     head->redef[n].insertAttribute("mktsegment", 2, 64);
     head->redef[n].insertAttribute("comment", 2, 128);
-    }
-    
-    if (fid == 2) {
-        head->redef[n].initRelation(head, fid, "nation", "IreneWu");
-        head->redef[n].insertAttribute("nationkey", 1, 4);
-        head->redef[n].insertAttribute("name", 2, 16);
-        head->redef[n].insertAttribute("regionkey", 1, 4);
-        head->redef[n].insertAttribute("comment", 2, 104);
-    }
     return 0;
 }
 

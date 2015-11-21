@@ -4,15 +4,15 @@
 #include "file.h"
 #include "err.h"
 #include "dataDictionary.h"
-/*
+
 #define DBMS_DAT "./dbms.dat"
 #define Customer_tbl "./customer.tbl"
 #define Index_Path "./"
- */
+/*
 #define DBMS_DAT "/Users/Irene/Desktop/dbms.dat"
 #define Customer_tbl "/Users/Irene/Desktop/customer.tbl"
-#define Nation_tbl "/Users/Irene/Desktop/nation.tbl"
 #define Index_Path "/Users/Irene/Desktop/"
+*/
 /*
 struct dbSysHead
 {

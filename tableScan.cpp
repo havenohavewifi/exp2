@@ -14,8 +14,8 @@
 #include <iostream>
 void TableScan(struct dbSysHead * head,int fileID, relation * temp_datadic){
     int fid = queryFileID(head, fileID);
-    int dictID = 0;
-    int original_rec_length = head->redef[fid].getRecordLength(); //record_length in original table
+    int dictID = fid;
+    int original_rec_length = head->redef[dictID].getRecordLength(); //record_length in original table
     int size_per_record = original_rec_length;   //each record length in new temp table, in case SPJ use
     //look up which buffer is empty
     int buffer_id_ ;

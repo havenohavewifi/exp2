@@ -5,6 +5,11 @@
 //  Created by IreneWu on 15/11/15.
 //  Copyright (c) 2015年 IreneWu. All rights reserved.
 //
+extern "C"{
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+};
 #include <string>
 #include "cursorForTmptable.h"
 bool RecordCursorTmp::getNextRecord(void *des) {

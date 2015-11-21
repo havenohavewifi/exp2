@@ -41,6 +41,7 @@ public:
     relation(relation& RR);
     ~relation();
     int initRelation(struct dbSysHead *head, int fid, char *relationName, char *constructorName);
+    int init(char *relationName, char *constructorName);
     int changeRecordNum(int num);
     int insertAttribute(char *name, int type, int length);
     char *getRelationName();
