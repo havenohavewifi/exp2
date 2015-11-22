@@ -8,7 +8,7 @@
 
 #ifndef tableScan_h
 #define tableScan_h
-
+#include "dataDictionary.h"
 #include <stdio.h>
-void TableScan(struct dbSysHead * head,int fileID, struct relationDefine * temp_datadic);
+void TableScan(struct dbSysHead * head,int fileID, relation * temp_datadic);
 #endif 

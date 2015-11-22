@@ -28,7 +28,7 @@ int sysUpdate( struct dbSysHead *head )
     rewind( head->fpdesc);
     fseek( head->fpdesc, head->desc.dataDictionaryAddr, SEEK_SET);
     for (i = 0; i < MAX_FILE_NUM; i++) {
-        fwrite( &head->redef[i], sizeof(struct relationDefine) , head->desc.sizedataDictionary, head->fpdesc);
+        fwrite( &head->redef[i], sizeof(relation) , head->desc.sizedataDictionary, head->fpdesc);
     }
     
 

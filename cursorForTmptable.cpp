@@ -5,7 +5,9 @@
 //  Created by IreneWu on 15/11/15.
 //  Copyright (c) 2015年 IreneWu. All rights reserved.
 //
-#include <string>
+extern "C"{
+#include <string.h>
+};
 #include "cursorForTmptable.h"
 bool RecordCursorTmp::getNextRecord(void *des) {
     // all the data is read

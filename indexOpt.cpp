@@ -13,267 +13,299 @@ extern "C"{
 
 
 /**
- * @brief ÔÚ±íµÄÄ³Ò»ÊôĞÔÉÏ½¨Á¢B+Ê÷Ë÷Òı
+ * @brief åœ¨è¡¨çš„æŸä¸€å±æ€§ä¸Šå»ºç«‹B+æ ‘ç´¢å¼•
  *
  * @param [in] head  : struct dbSysHead *
  * @param [in] fid : long
  * @param [in] column : char*
  * @return  bool
- * 
+ *
  * @author weiyu
  * @date 2015/11/8
  **/
 bool createIndexOn(struct dbSysHead *head, long fid, char* column){
-	printf("create index on %s....\n",column);
-	int idx;
-	char* index_filename;
-	char* indexname = "b_plus_tree_index_";
-	char fileID[5] = "";
-	sprintf(fileID,"%d",fid);
-	Element elem_insert;
-	FILE *fp_create;
-	FILE *fp;
-	int key;
-	int location;
-	
-	index_filename = (char *)malloc( 3*NAMELENGTH + 50);
-	*index_filename = '\0';
-	index_filename = strcat(index_filename, Index_Path);
-	index_filename = strcat(index_filename,indexname);
-	index_filename = strcat(index_filename,fileID);
-	index_filename = strcat(index_filename,column);
-	index_filename = strcat(index_filename,".dat");
-	printf("%s\n",index_filename);
-		
-	//²éÑ¯Êı¾İ×Öµä£¬»ñÈ¡ÊôĞÔĞòºÅ
-	idx =  queryFileID(head, fid);
-	if( idx<0 ) {
-		isAvail(NULL,"createIndexOn",ARRAY);
-	}
-	int i;
-	for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
-		if( strcmp(column, head->redef[idx].getAttributeByNo(i).getName()) == 0)
-			break;
-	}	
-	//iÊôĞÔĞòºÅ³¬³öÊôĞÔ¸öÊı
-	if(i > head->redef[idx].getAttributeNum()){
-		printf("No such attribute.\n");
-		return false;
-	}
-		
-	//ÊôĞÔ²»ÊÇÕûĞÍÊ±£¬²»½¨Á¢Ë÷Òı£¬·µ»Øfalse
-	if( head->redef[idx].getAttributeByNo(i).getType() != 1){
-		printf("Not an int attribute.\n");
-		return false;
-	}
-
-	//´ò¿ªË÷ÒıÎÄ¼ş
-	fp_create = fopen(index_filename,"wb");
-	fclose(fp_create);
-	fp = fopen(index_filename,"rb+");
-	if( fp==NULL){
-		printf("fopen error!\n");
-		exit(0);
-	}
-	free(index_filename);
-	//±éÀú±íÖĞµÄÊı¾İ
-
+    printf("create index on %s....\n",column);
+    int idx;
+    char* index_filename;
+    char* indexname = "b_plus_tree_index_";
+    char fileID[5] = "";
+    sprintf(fileID,"%d",fid);
+    Element elem_insert;
+    FILE *fp_create;
+    FILE *fp;
+    int key;
+    int location;
+    
+    index_filename = (char *)malloc( 3*NAMELENGTH + 50);
+    *index_filename = '\0';
+    index_filename = strcat(index_filename, Index_Path);
+    index_filename = strcat(index_filename,indexname);
+    index_filename = strcat(index_filename,fileID);
+    index_filename = strcat(index_filename,column);
+    index_filename = strcat(index_filename,".dat");
+    printf("%s\n",index_filename);
+    
+    //æŸ¥è¯¢æ•°æ®å­—å…¸ï¼Œè·å–å±æ€§åºå·
+    idx =  queryFileID(head, fid);
+    if( idx<0 ) {
+        isAvail(NULL,"createIndexOn",ARRAY);
+    }
+    int i;
+    for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
+        if( strcmp(column, head->redef[idx].getAttributeByNo(i).getName()) == 0)
+            break;
+    }
+    //iå±æ€§åºå·è¶…å‡ºå±æ€§ä¸ªæ•°
+    if(i > head->redef[idx].getAttributeNum()){
+        printf("No such attribute.\n");
+        return false;
+    }
+    
+    //å±æ€§ä¸æ˜¯æ•´å‹æ—¶ï¼Œä¸å»ºç«‹ç´¢å¼•ï¼Œè¿”å›false
+    if( head->redef[idx].getAttributeByNo(i).getType() != INT){
+        printf("Not an int attribute.\n");
+        return false;
+    }
+    
+    //æ‰“å¼€ç´¢å¼•æ–‡ä»¶
+    fp_create = fopen(index_filename,"wb");
+    fclose(fp_create);
+    fp = fopen(index_filename,"rb+");
+    if( fp==NULL){
+        printf("fopen error!\n");
+        exit(0);
+    }
+    free(index_filename);
+    //éå†è¡¨ä¸­çš„æ•°æ®
+    
     int scanPointer = 0;
-	int offset;
+    int offset;
     long rec_length = (long)(head->redef[idx].getRecordLength());
     // default use the first buffer block
-    RecordCursor scanTable(head, 0, fid, rec_length);		
+    RecordCursor scanTable(head, fid, rec_length,0);
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
     while (true == scanTable.getNextRecord(one_Row_)) { //only scan
-		offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
-		key = *((int *)(one_Row_ + offset));
-		location = scanTable.getcLogicLocation();
-		printf("key::%d, location::%d\n",key,location);
-		elem_insert.key = key;
-		elem_insert.pos = location;
-		//½«Ò»¸ö¼ÇÂ¼¶ÔÓ¦µÄelemĞ´ÈëË÷ÒıÎÄ¼ş
-		insert(fp, elem_insert);
-		scanPointer ++;
+        offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
+        key = *((int *)(one_Row_ + offset));
+        //getcLogicLocation() is the location of ccursor, not the record!
+        location = scanTable.getcLogicLocation()-rec_length;
+        //printf("key::%d, location::%d\n",key,location);
+        elem_insert.key = key;
+        elem_insert.pos = location;
+        //å°†ä¸€ä¸ªè®°å½•å¯¹åº”çš„elemå†™å…¥ç´¢å¼•æ–‡ä»¶
+        insert(fp, elem_insert);
+        scanPointer ++;
         //display(fp);
-		printf("\n");
-		if(scanPointer > 30)//ÔİÊ±Ö»½¨Á¢30ÌõË÷Òı
-			break;
-            //getOneRecord(one_Row_, (head->desc).redef[idx]); //get each attribute value and print
+       // printf("\n");
+        //if(scanPointer > 30)//æš‚æ—¶åªå»ºç«‹30æ¡ç´¢å¼•
+        //    break;
+        //getOneRecord(one_Row_, (head->desc).redef[idx]); //get each attribute value and print
     }
-	
-	printf("inserted %d records.\n",scanPointer-1);
-	//test
-/*
-	printf("search(fp,-10):%d\n",search(fp,-10));
-	printf("search(fp,1):%d\n",search(fp,1));
-	printf("search(fp,2):%d\n",search(fp,2));
-	printf("search(fp,50):%d\n",search(fp,50));
-*/
-	fclose(fp);
-
-	return true;
+    
+    printf("inserted %d records.\n",scanPointer-1);
+    //test
+    /*
+     printf("search(fp,-10):%d\n",search(fp,-10));
+     printf("search(fp,1):%d\n",search(fp,1));
+     printf("search(fp,2):%d\n",search(fp,2));
+     printf("search(fp,50):%d\n",search(fp,50));
+     */
+    fclose(fp);
+    
+    return true;
 }
 
 
 /**
- * @brief É¾³ıÕû¸öË÷Òı
+ * @brief åˆ é™¤æ•´ä¸ªç´¢å¼•
  *
  * @param [in] head  : struct dbSysHead *
  * @param [in] fid : long
  * @param [in] column : char*
  * @return  bool
- * 
+ *
  * @author weiyu
  * @date 2015/11/6
  **/
 bool deleteIndex(struct dbSysHead *head, long fid, char* column){
-		//check
-	printf("É¾³ıË÷Òı....\n");
-
-	char* index_filename;
-	char* indexname = "b_plus_tree_index_";
-	char fileID[5] = "";
-	sprintf(fileID,"%d",fid);
-	index_filename = strcat(index_filename,indexname);
-	index_filename = strcat(index_filename,fileID);
-	index_filename = strcat(index_filename,column);
-	index_filename = strcat(index_filename,".dat");
-	
-	if( remove(index_filename) == 0 ){
-    	printf("Removed %s.", index_filename);
-		return true;
-	}
+    //check
+    printf("åˆ é™¤ç´¢å¼•....\n");
+    
+    char* index_filename;
+    char* indexname = "b_plus_tree_index_";
+    char fileID[5] = "";
+    sprintf(fileID,"%d",fid);
+    index_filename = strcat(index_filename,indexname);
+    index_filename = strcat(index_filename,fileID);
+    index_filename = strcat(index_filename,column);
+    index_filename = strcat(index_filename,".dat");
+    
+    if( remove(index_filename) == 0 ){
+        printf("Removed %s.", index_filename);
+        return true;
+    }
     else{
-    	perror("remove");
-		return false;
-	}
+        perror("remove");
+        return false;
+    }
 }
 
 
 /**
- * @brief ±íÖĞ²åÈëÒ»ĞĞÊı¾İÊ±£¬ÔÚ±íµÄËùÓĞË÷ÒıÖĞ²åÈëÒ»¸öelement
+ * @brief è¡¨ä¸­æ’å…¥ä¸€è¡Œæ•°æ®æ—¶ï¼Œåœ¨è¡¨çš„æ‰€æœ‰ç´¢å¼•ä¸­æ’å…¥ä¸€ä¸ªelement
  *
  * @param [in] head  : struct dbSysHead *
  * @param [in] fid : long
- * @param [in] position : long 
+ * @param [in] position : long
  * @return  bool
- * 
+ *
  * @author weiyu
  * @date 2015/11/6
  **/
 bool insertInIndex(struct dbSysHead *head, long fid, int position){
-	Element elem_insert;
-
-	FILE *fp;
-	int idx;
-	char* column;
-	char* index_filename;
-	char* indexname = "b_plus_tree_index_";
-	char fileID[5] = "";
-	sprintf(fileID,"%d",fid);
-	
-	
-	//²éÑ¯Êı¾İ×Öµä£¬»ñÈ¡ÊôĞÔĞòºÅ
-	idx =  queryFileID(head, fid);
-	if( idx<0 ) {
-		isAvail(NULL,"createIndexOn",ARRAY);
-	}
-	
-	int i;
-	int offset;
-	int key;
-	long rec_length = (long)(head->redef[idx].getRecordLength());
-    char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
-	rdFile( head, 0, fid, position, rec_length,one_Row_);
+    Element elem_insert;
     
-	for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
-		index_filename = (char *)malloc( 3*NAMELENGTH );
-		*index_filename = '\0';
-		column = (char *)malloc( NAMELENGTH );
-		strcpy(column, head->redef[idx].getAttributeByNo(i).getName());
-		index_filename = strcat(index_filename,indexname);
-		index_filename = strcat(index_filename,fileID);
-		index_filename = strcat(index_filename,column);
-		index_filename = strcat(index_filename,".dat");
-		fp = fopen(index_filename,"rb+");
-		if( fp==NULL){	//no index on current column
-			break;
-		}
-		
-		offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
-		key = *((int *)(one_Row_ + offset));
-		elem_insert.key = key;
-		elem_insert.pos = position;
-		insert(fp, elem_insert);
-		printf("inserting in %s\n",index_filename);
-		display(fp);
-		fclose(fp);
-		free(index_filename);
-		free(column);
-	}
-	return true;
+    FILE *fp;
+    int idx;
+    char* column;
+    char* index_filename;
+    char* indexname = "b_plus_tree_index_";
+    char fileID[5] = "";
+    sprintf(fileID,"%d",fid);
+    
+    
+    //æŸ¥è¯¢æ•°æ®å­—å…¸ï¼Œè·å–å±æ€§åºå·
+    idx =  queryFileID(head, fid);
+    if( idx<0 ) {
+        isAvail(NULL,"createIndexOn",ARRAY);
+    }
+    
+    int i;
+    int offset;
+    int key;
+    long rec_length = (long)(head->redef[idx].getRecordLength());
+    char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
+    rdFile( head, 0, fid, position, rec_length,one_Row_);
+    
+    for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
+        index_filename = (char *)malloc( 3*NAMELENGTH );
+        *index_filename = '\0';
+        column = (char *)malloc( NAMELENGTH );
+        strcpy(column, head->redef[idx].getAttributeByNo(i).getName());
+        index_filename = strcat(index_filename,indexname);
+        index_filename = strcat(index_filename,fileID);
+        index_filename = strcat(index_filename,column);
+        index_filename = strcat(index_filename,".dat");
+        fp = fopen(index_filename,"rb+");
+        if( fp==NULL){	//no index on current column
+            break;
+        }
+        
+        offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
+        key = *((int *)(one_Row_ + offset));
+        elem_insert.key = key;
+        elem_insert.pos = position;
+        insert(fp, elem_insert);
+        printf("inserting in %s\n",index_filename);
+        display(fp);
+        fclose(fp);
+        free(index_filename);
+        free(column);
+    }
+    return true;
 }
 
 
 /**
- * @brief ±íÖĞÉ¾³ıÒ»ĞĞÊı¾İÊ±£¬ÔÚ±íµÄËùÓĞË÷ÒıÖĞÉ¾³ıÒ»¸öelem
+ * @brief è¡¨ä¸­åˆ é™¤ä¸€è¡Œæ•°æ®æ—¶ï¼Œåœ¨è¡¨çš„æ‰€æœ‰ç´¢å¼•ä¸­åˆ é™¤ä¸€ä¸ªelem
  *
  * @param [in] head  : struct dbSysHead *
- * @param [in] fid : long 
- * @param [in] position : int 
- * @return  bool 
- * 
+ * @param [in] fid : long
+ * @param [in] position : int
+ * @return  bool
+ *
  * @author weiyu
  * @date 2015/11/6
  **/
 bool deleteInIndex(struct dbSysHead *head, long fid, int position){
-	int idx;
-	char* column;
-	char* index_filename;
-	char* indexname = "b_plus_tree_index_";
-	char fileID[5] = "";
-	sprintf(fileID,"%d",fid);
-	
-	FILE *fp;
-	
-	//²éÑ¯Êı¾İ×Öµä£¬»ñÈ¡ÊôĞÔĞòºÅ
-	idx =  queryFileID(head, fid);
-	if( idx<0 ) {
-		isAvail(NULL,"createIndexOn",ARRAY);
-	}
-	
-	
-	int i;
-	int offset;
-	int key;
-	long rec_length = (long)(head->redef[idx].getRecordLength());
+    int idx;
+    char* column;
+    char* index_filename;
+    char* indexname = "b_plus_tree_index_";
+    char fileID[5] = "";
+    sprintf(fileID,"%d",fid);
+    
+    FILE *fp;
+    
+    //æŸ¥è¯¢æ•°æ®å­—å…¸ï¼Œè·å–å±æ€§åºå·
+    idx =  queryFileID(head, fid);
+    if( idx<0 ) {
+        isAvail(NULL,"createIndexOn",ARRAY);
+    }
+    
+    
+    int i;
+    int offset;
+    int key;
+    long rec_length = (long)(head->redef[idx].getRecordLength());
     char * one_Row_ = (char *)malloc(sizeof(char)*rec_length);
-	rdFile( head, 0, fid, position, rec_length,one_Row_);
+    rdFile( head, 0, fid, position, rec_length,one_Row_);
     
-	for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
-		index_filename = (char *)malloc( 3*NAMELENGTH );
-		*index_filename = '\0';
-		column = (char *)malloc( NAMELENGTH );
-		strcpy(column, head->redef[idx].getAttributeByNo(i).getName());
-		index_filename = strcat(index_filename,indexname);
-		index_filename = strcat(index_filename,fileID);
-		index_filename = strcat(index_filename,column);
-		index_filename = strcat(index_filename,".dat");
-		fp = fopen(index_filename,"rb+");
-		if( fp==NULL){	//no index on current column
-			break;
-		}
-    
-		offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
-		key = *((int *)(one_Row_ + offset));
-		del(fp, key);
-		printf("deleting in %s\n",index_filename);
-		display(fp);
-		fclose(fp);
-		free(index_filename);
-		free(column);
-	}
-	return true;
+    for( i = 0; i <= head->redef[idx].getAttributeNum(); i++) {
+        index_filename = (char *)malloc( 3*NAMELENGTH );
+        *index_filename = '\0';
+        column = (char *)malloc( NAMELENGTH );
+        strcpy(column, head->redef[idx].getAttributeByNo(i).getName());
+        index_filename = strcat(index_filename,indexname);
+        index_filename = strcat(index_filename,fileID);
+        index_filename = strcat(index_filename,column);
+        index_filename = strcat(index_filename,".dat");
+        fp = fopen(index_filename,"rb+");
+        if( fp==NULL){	//no index on current column
+            break;
+        }
+        
+        offset = head->redef[idx].getAttributeByNo(i).getRecordDeviation();
+        key = *((int *)(one_Row_ + offset));
+        del(fp, key);
+        printf("deleting in %s\n",index_filename);
+        display(fp);
+        fclose(fp);
+        free(index_filename);
+        free(column);
+    }
+    return true;
 }
 
 
+/**
+ * @brief search by fid,column name and value
+ *
+ * @param [in] head  : struct dbSysHead *
+ * @param [in] fid : long
+ * @param [in] name : char*
+ * @param [in] value : int
+ * @return  pos: int
+ *
+ * @author weiyu
+ * @date 2015/11/21
+ **/
+int searchByColumnAndValue(struct dbSysHead *head, long fid, char* column, int value){
+//    printf("searchByColumnAndValue\n");
+    char* index_filename;
+    char* indexname = "b_plus_tree_index_";
+    char fileID[5] = "";
+    sprintf(fileID,"%d",fid);
+
+    index_filename = (char *)malloc( 3*NAMELENGTH + 50);
+    *index_filename = '\0';
+    index_filename = strcat(index_filename, Index_Path);
+    index_filename = strcat(index_filename,indexname);
+    index_filename = strcat(index_filename,fileID);
+    index_filename = strcat(index_filename,column);
+    index_filename = strcat(index_filename,".dat");
+    FILE* fp = fopen(index_filename,"rb+");
+    int pos = search(fp,value);
+    fclose(fp);
+    return pos;
+} 

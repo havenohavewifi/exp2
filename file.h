@@ -2,11 +2,11 @@
 #define FILE_H_
 
 //  ˝æ›ø‚◊Ó∂‡»›ƒ…¡ø192M
-#define SIZE_DATA_SPACE (12*1024*1024)
+//#define SIZE_DATA_SPACE (12*1024*1024)
 // √ø“≥¥Û–°4K
 
 // ¬†Àù√¶‚Ä∫√∏‚Äö‚óä√ì‚àÇ‚Ä°¬ª‚Ä∫∆í‚Ä¶¬°√∏192M
-#define SIZE_DATA_SPACE (2*1024*1024)
+#define SIZE_DATA_SPACE (16*1024*1024)
 // ‚àö√∏‚Äú‚â•¬•√õ‚Äì¬∞4K
 
 #define SIZE_PER_PAGE (4*1024)
@@ -15,9 +15,9 @@
 
 // ‚ÄôÀö‚àèÀÜ¬†Àù√¶‚Ä∫√∏‚Äö¬•√ä‚Äò‚ÅÑ‚Äú¬™‚àèÀÜ≈í∆í¬∫ÀõDBMS_DAT¬µ¬±√∑‚Äì¬£¬®‚Äú¬ø¬•≈í√Ä‚â•‚Äì√ö≈í‚Ñ¢ ??≈í‚Ñ¢‚Äò‚Ä∫¬†¬±¬™œÄ‚àö¬™‚Äù‚Äì‚Äù‚àö¬µŒ©¬µ∆í
 // (table description??, bitmap, data (pages), segment??)
-#define TABLE_DESC_ADDR 0
+#define TABLE_DESC_ADDR (0)
 // BitMap‚Äò‚ÅÑ¬•√ä¬•¬¢≈í∆í¬∫Àõ√∑‚Äì¬µ∆í¬µ√ø√∑‚àë
-#define BITMAP_ADDR 1024 
+#define BITMAP_ADDR (1024)
 // ¬†Àù√¶‚Ä∫‚àÇ≈í‚Äò‚ÅÑ¬•√ä¬•¬¢≈í∆í¬∫Àõ√∑‚Äì¬µ∆í¬µ√ø√∑‚àë
 
 #define DICTIONARY_ADDR  (BITMAP_ADDR+SIZE_BIT_MAP)
@@ -34,15 +34,15 @@
 // µ⁄“ª∏ˆ±Ìµƒ±‡∫≈£¨¥”1ø™ º
 */
 // ‚àö√∏‚àèÀÜ‚àÇ≈í¬µ∆íœÄ√É‚àÇ¬Æ‚Äú‚â•‚àö√ä¬†Àù
-#define PAGE_PER_SEGMENT 28
+#define PAGE_PER_SEGMENT (28)
 // ‚óä√ì¬•√õ¬•√ä¬•¬¢¬µ∆í¬±√å‚àèÀÜ¬†Àù
-#define MAX_FILE_NUM 8
+#define MAX_FILE_NUM (8)
 // ¬µ‚ÅÑ‚Äú¬™‚àèÀÜ¬±√å¬µ∆í¬±‚Ä°‚à´‚âà¬£¬®¬•‚Äù1√∏‚Ñ¢¬†¬∫
 
-#define FIRST_FID	1
+#define FIRST_FID	(1)
 
 // ¬™‚à´‚â•√Ç¬´¬Ø√ÄÀò‚à´¬®‚Äú‚â•‚àö√ä‚àèÀÜ¬†Àù
-#define SIZE_BUFF 32
+#define SIZE_BUFF (32)
 // Buffer√∑‚Äì‚â§¬™¬•√ä‚Äò‚ÅÑ‚â§√à‚Äî√ò‚Äú‚â•‚àö√ä¬†¬±¬µ∆í‚àë¬µ¬™√ø√∑¬µ
 #define BUFF_NOT_HIT -1
 // ‚àÇ‚Äò‚Äú‚â•‚àö√ä‚â§≈∏‚óäÀú¬µ∆í‚àö√ã¬†ÀÜ
