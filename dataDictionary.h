@@ -8,7 +8,7 @@ extern "C"{
 #include "dbHead.h"
 
 #define NAMELENGTH  32
-#define ATTRIBUTENUM  10
+#define ATTRIBUTENUM  12
 #define INT 1
 #define CHAR 2
 #define DATE 3
@@ -41,7 +41,7 @@ public:
     relation(relation& RR);
     ~relation();
     int initRelation(struct dbSysHead *head, int fid, char *relationName, char *constructorName);
-    int init(char *relationName, char *constructorName);
+	int init(char *relationName, char *constructorName);
     int changeRecordNum(int num);
     int insertAttribute(char *name, int type, int length);
     char *getRelationName();
